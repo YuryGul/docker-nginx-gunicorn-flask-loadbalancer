@@ -1,0 +1,27 @@
+version: "3.3"
+services:
+  application1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn --workers 4 --bind 0.0.0.0:5001 flask-hello
+    expose:
+      - 5001
+
+  application2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn --workers 2 --bind 0.0.0.0:5001 flask-hello
+    expose:
+      - 5001
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 5002:5002
+    depends_on:
+      - application1
+      - application2
